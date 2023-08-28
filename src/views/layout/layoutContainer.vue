@@ -10,6 +10,34 @@ import {
   CaretBottom
 } from '@element-plus/icons-vue'
 import avatar from '@/assets/default.png'
+import { useUserStore } from '@/stores'
+import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
+const userStore = useUserStore()
+onMounted(() => {
+  userStore.getUser()
+  console.log('成功拿到用户信息')
+})
+
+const router = useRouter()
+const handleCommand = async (command) => {
+  console.log(command)
+  if (command === 'logout') {
+    // 退出操作
+    await ElMessageBox.confirm('是否退出登录', '提示', {
+      type: 'warning',
+      confirmButtonText: '确定',
+      cancleButtonText: '取消'
+    })
+    // 清除本地的数据（token + user信息）
+    userStore.removeToken()
+    userStore.setUser()
+    router.push(`/login`)
+  } else {
+    // 跳转操作
+    router.push(`/user/${command}`)
+  }
+}
 </script>
 
 <template>
@@ -68,12 +96,15 @@ import avatar from '@/assets/default.png'
 
     <el-container>
       <el-header>
-        <div>黑马程序员：<strong>小帅鹏</strong></div>
-        <el-dropdown placement="bottom-end">
+        <div>黑马程序员：<strong>mm</strong></div>
+        <!-- 最右上角 -->
+        <el-dropdown placement="bottom-end" @command="handleCommand">
+          <!-- 展示给用户看的，默认看到的 -->
           <span class="el-dropdown__box">
             <el-avatar :src="avatar" />
             <el-icon><CaretBottom /></el-icon>
           </span>
+          <!-- 折叠的下拉部分 -->
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="profile" :icon="User"

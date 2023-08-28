@@ -8,7 +8,7 @@ pinia.use(persist)
 export default pinia
 
 // import { useUserStore } from './modules/user'
-// export { useUserzStore }
+// export { useUserStore }
 // import { useCounterStore } from './modules/counter'
 // export { useCounterStore }
 // 也可以更简便的写为

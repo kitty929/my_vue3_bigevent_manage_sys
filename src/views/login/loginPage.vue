@@ -87,6 +87,7 @@ const login = async () => {
   console.log('开始登录请求', res)
   ElMessage.success('登录成功')
   router.push('/')
+  console.log('跳转页面成功')
 }
 </script>
 
