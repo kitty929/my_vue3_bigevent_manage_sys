@@ -10,7 +10,7 @@ import {
   CaretBottom
 } from '@element-plus/icons-vue'
 import avatar from '@/assets/default.png'
-import { useUserStore } from '@/stores'
+import { useUserStore } from '@/stores/index.js'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 const userStore = useUserStore()
