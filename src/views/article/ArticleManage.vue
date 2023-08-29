@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
+import ChannelSelect from './components/ChannelSelect.vue'
 const articleList = ref([
   {
     id: 5961,
@@ -17,6 +18,16 @@ const articleList = ref([
     cate_name: '体育'
   }
 ])
+
+// 与子组件进行绑定,定义请求参数请求
+// 不是用别名，使用id
+// const cateId = ref(53799)
+const params = ref({
+  pagenum: 1,
+  pagesize: 5,
+  cate_id: '',
+  state: ''
+})
 
 // 编辑逻辑
 const onEditArticle = (row) => {
@@ -38,15 +49,14 @@ const onDelArticle = (row) => {
     <!-- 表单区域 inline属性是在一行显示 -->
     <el-form inline>
       <el-form-item label="文章分类：">
-        <!-- label是展示给用户看的，value是提交给后台 -->
-        <el-select>
-          <el-option label="新闻" value="110"></el-option>
-          <el-option label="体育" value="137"></el-option>
-        </el-select>
+        <!-- 通用组件-- el-select 获取文章分类;  -->
+        <!-- Vue2 => v-model :value 和 @input 的简写 -->
+        <!-- Vue3 => v-model :modelValue 和 @update:modelValue的简写 还是需要封装-->
+        <channel-select v-model="params.cate_id"></channel-select>
       </el-form-item>
       <el-form-item label="发布状态：">
         <!-- 这里后台标记发布状态，就是通过中文标记的，已发布/草稿 -->
-        <el-select>
+        <el-select v-model="params.state">
           <el-option label="已发布" value="已发布"></el-option>
           <el-option label="草稿" value="草稿"></el-option>
         </el-select>
