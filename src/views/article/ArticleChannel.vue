@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { artGetChannelsService } from '@/api/article.js'
+import { artGetChannelsService, artDelChannelService } from '@/api/article.js'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import ChannelEdit from './components/ChannelEdit.vue'
 const channelList = ref([])
@@ -16,17 +16,30 @@ const getChannelList = async () => {
 }
 getChannelList()
 
-const onEditChannel = (row) => {
-  console.log(row)
-  dialog.value.open(row)
-}
-const onDeleteChannel = (row, $index) => {
+const onEditChannel = (row, $index) => {
   console.log(row, $index)
+  dialog.value.open(row, $index)
+}
+const onDeleteChannel = async (row) => {
+  await ElMessageBox.confirm('确定要删除吗?', '提示', {
+    type: 'warning',
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  })
+  console.log(row)
+  await artDelChannelService(row.id)
+  ElMessage.success('删除成功')
+  getChannelList()
 }
 
 const onAddChannel = () => {
   console.log('添加分类')
   dialog.value.open({})
+}
+
+// ChannelEdit组件通知此组件刷新
+const onSuccess = () => {
+  getChannelList()
 }
 </script>
 
@@ -37,10 +50,10 @@ const onAddChannel = () => {
     </template>
 
     <el-table v-loading="loading" :data="channelList" style="width: 100%">
-      <el-table-column lable="序号" width="100"></el-table-column>
-      <el-table-column prop="cate_name" lable="分类名称"></el-table-column>
-      <el-table-column prop="cate_alias" lable="分类别名"></el-table-column>
-      <el-table-column lable="操作" width="100">
+      <el-table-column label="序号" width="100" type="index"></el-table-column>
+      <el-table-column label="分类名称" prop="cate_name"></el-table-column>
+      <el-table-column label="分类别名" prop="cate_alias"></el-table-column>
+      <el-table-column label="操作" width="100">
         <!-- row是channelList的每一项，$index是索引 -->
         <template #default="{ row, $index }">
           <el-button
@@ -49,16 +62,14 @@ const onAddChannel = () => {
             plain
             type="primary"
             @click="onEditChannel(row, $index)"
-            >编辑</el-button
-          >
+          ></el-button>
           <el-button
             :icon="Delete"
             circle
             plain
             type="danger"
             @click="onDeleteChannel(row, $index)"
-            >删除</el-button
-          >
+          ></el-button>
         </template>
       </el-table-column>
 
@@ -67,7 +78,7 @@ const onAddChannel = () => {
       </template>
     </el-table>
     <!-- 添加分类 编辑分类弹窗 -->
-    <channel-edit ref="dialog"></channel-edit>
+    <channel-edit ref="dialog" @success="onSuccess"></channel-edit>
   </page-container>
 </template>
 

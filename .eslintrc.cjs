@@ -40,5 +40,6 @@ module.exports = {
     ElMessageBox: 'readonly',
     ElLoading: 'readonly',
     ElTable: 'readonly'
+    // ElTableColumn: 'readonly'
   }
 }
