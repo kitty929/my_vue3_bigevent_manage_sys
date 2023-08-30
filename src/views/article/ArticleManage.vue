@@ -2,32 +2,64 @@
 import { ref } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import ChannelSelect from './components/ChannelSelect.vue'
-const articleList = ref([
-  {
-    id: 5961,
-    title: '新的文章啊',
-    pub_date: '2022-07-10 14:53:52.604',
-    state: '已发布',
-    cate_name: '体育'
-  },
-  {
-    id: 5962,
-    title: '新的文章啊',
-    pub_date: '2022-07-10 14:54:30.904',
-    state: '草稿',
-    cate_name: '体育'
-  }
-])
+import { artGetListService } from '@/api/article'
+import { formatTime } from '@/utils/format.js'
+
+// 不需要了，要进行动态渲染
+// const articleList = ref([
+//   {
+//     id: 5961,
+//     title: '新的文章啊',
+//     pub_date: '2022-07-10 14:53:52.604',
+//     state: '已发布',
+//     cate_name: '体育'
+//   },
+//   {
+//     id: 5962,
+//     title: '新的文章啊',
+//     pub_date: '2022-07-10 14:54:30.904',
+//     state: '草稿',
+//     cate_name: '体育'
+//   }
+// ])
+const articleList = ref([]) //文章列表
+const total = ref(0) //总条数
 
 // 与子组件进行绑定,定义请求参数请求
 // 不是用别名，使用id
 // const cateId = ref(53799)
 const params = ref({
-  pagenum: 1,
-  pagesize: 5,
+  pagenum: 1, //当前页
+  pagesize: 5, //当前页的每页条数
   cate_id: '',
   state: ''
 })
+
+const getArticleList = async () => {
+  const res = await artGetListService(params.value)
+  articleList.value = res.data.data
+  total.value = res.data.total
+  console.log(articleList.value)
+}
+
+getArticleList()
+
+// 处理分页逻辑
+const onSizeChange = (size) => {
+  // console.log('当前每页条数', size)
+  // 只要是每页条数改变了，那么原来的正在访问的当前页意义就不大了，数据大概率不在原来那一页了
+  // 重新从第一页开始渲染即可
+  params.value.pagenum = 1
+  params.value.pagesize = size
+  // 基于最新的当前页和每页条数开始重新渲染
+  getArticleList()
+}
+const onCurrentChange = (page) => {
+  // console.log('页码变化了', page)
+  // 更新当前页，基于最新的当前页开始渲染
+  params.value.pagenum = page
+  getArticleList()
+}
 
 // 编辑逻辑
 const onEditArticle = (row) => {
@@ -76,7 +108,11 @@ const onDelArticle = (row) => {
         </template>
       </el-table-column>
       <el-table-column label="分类" prop="cate_name"></el-table-column>
-      <el-table-column label="发表时间" prop="pub_date"></el-table-column>
+      <el-table-column label="发表时间" prop="pub_date">
+        <template #default="{ row }">
+          {{ formatTime(row.pub_date) }}
+        </template>
+      </el-table-column>
       <el-table-column label="状态" prop="state"></el-table-column>
       <!-- 利用作用域插槽 row 可以获取当前行的数据 => v-for 遍历item -->
       <el-table-column label="操作">
@@ -98,6 +134,19 @@ const onDelArticle = (row) => {
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 分页区域 -->
+    <el-pagination
+      v-model:current-page="params.pagenum"
+      v-model:page-size="params.pagesize"
+      :page-sizes="[2, 3, 4, 5, 10]"
+      layout="jumper, total, sizes, prev, pager, next"
+      :background="true"
+      :total="total"
+      @size-change="onSizeChange"
+      @current-change="onCurrentChange"
+      style="margin-top: 20px; justify-content: flex-end"
+    />
   </page-container>
 </template>
 
