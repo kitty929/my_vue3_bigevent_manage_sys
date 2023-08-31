@@ -28,3 +28,20 @@ export const artDelChannelService = (id) => {
 export const artGetListService = (params) => {
   return request.get('/my/article/list', { params })
 }
+
+// 文章：添加文章功能 - 添加文章
+export const artPublishService = (data) => {
+  return request.post('/my/article/add', data)
+}
+
+// 文章：获取文章详情 - 编辑文章
+export const artGetDetailService = (id) => {
+  return request.get('/my/article/info', {
+    params: { id }
+  })
+}
+
+// 文章：编辑文章功能 - 编辑文章
+export const artEditService = (data) => {
+  return request.put('/my/article/info', data)
+}

@@ -68,7 +68,7 @@ const articleEditRef = ref()
 // 添加文章逻辑
 const onAddArticle = () => {
   // visibleDrawer.value = true
-  articleEditRef.value.open()
+  articleEditRef.value.open({})
 }
 
 // 编辑逻辑
@@ -93,6 +93,20 @@ const onReset = () => {
   params.value.state = ''
   params.value.pagenum = 1
   getArticleList()
+}
+
+// 添加或者编辑 成功的回调
+const onSuccess = (type) => {
+  if (type === 'add') {
+    // 如果是添加，渲染最后一页
+    const lastPage = Math.ceil((total.value + 1) / params.value.pagesize)
+    // 更新成最大页码数,在渲染
+    params.value.pagenum = lastPage
+    getArticleList()
+  } else {
+    // 如果是编辑，渲染当前页
+    getArticleList()
+  }
 }
 </script>
 
@@ -173,7 +187,7 @@ const onReset = () => {
     />
 
     <!-- 抽屉区域 -->
-    <article-edit ref="articleEditRef"></article-edit>
+    <article-edit ref="articleEditRef" @success="onSuccess"></article-edit>
   </page-container>
 </template>
 
